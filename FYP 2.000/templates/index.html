@@ -1,0 +1,583 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Secure ATM</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            width: 100vw; /* Adjust as needed */
+            height: 100vh;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        {% comment %} .right-section {
+            flex: 1;
+            background-color: #1e488f; /* Dark blue background color */
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Prevent image overflow */
+        }
+
+        .right-section img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover; /* Ensure the image covers the entire container */
+            border-radius: 10px; /* Add some border radius for a smoother look */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); /* Add a subtle shadow for depth */
+        } {% endcomment %}
+        {% comment %} .right-section {
+            flex: 1;
+            background-color: #37507b; /* Dark blue background color */
+            height: 100%;
+            display: flex;
+            flex-direction: column; /* Stack image and text vertically */
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Prevent image overflow */
+            position: relative; /* Position the text relative to the container */
+        }
+        
+        .right-section img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover; /* Ensure the image covers the entire container */
+            border-radius: 10px; /* Add some border radius for a smoother look */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); /* Add a subtle shadow for depth */
+        }
+        
+        .image-text {
+            position: absolute;
+            bottom: 20px; /* Adjust as needed */
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
+            color: #fff;
+            border-radius: 10px;
+            width: calc(100% - 40px); /* Subtract padding from width */
+        }
+        
+        .image-text p {
+            margin: 0;
+            line-height: 1.5;
+        }
+         {% endcomment %}
+
+         .right-section {
+            flex: 1;
+            background-color: #37507b; /* Dark blue background color */
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .logo {
+            max-width: 350px; /* Adjust as needed */
+            max-height: 350px; /* Adjust as needed */
+            object-fit: contain; /* Ensure the entire image fits within the container */
+            border-radius: 10px;
+            margin-bottom: 20px; /* Adjust spacing between image and text */
+        }
+        
+        .image-text {
+            text-align: center;
+            padding: 20px;
+            {% comment %} background-color: rgba(0, 0, 0, 0.7); {% endcomment %}
+            color: #fff;
+            {% comment %} border-radius: 10px; {% endcomment %}
+            width: calc(100% - 40px);
+        }
+        
+        .image-text p {
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            font-size: 56px;
+            color: #333;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+            margin: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        hr {
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            width: 100%;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-upload {
+            display: inline-block;
+            padding: 15px 30px;
+            cursor: pointer;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+            margin: 10px;
+        }
+
+        .custom-file-upload:hover {
+            background-color: #45a049;
+        }
+
+        /* Additional styling for "Start Webcam" button */
+        .start-webcam-btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+            margin: 10px;
+        }
+
+        .start-webcam-btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* Styling for the directory display */
+        #file-directory {
+            margin-top: 10px;
+            font-style: italic;
+        }
+    </style>
+    <script>
+        // JavaScript function to check if a file is selected before form submission
+        function checkFile() {
+            var fileInput = document.getElementById('file-upload');
+            if (fileInput.files.length > 0) {
+                return true; // Allow form submission
+            } else {
+                alert('Please select a video file before submitting.');
+                return false; // Prevent form submission
+            }
+        }
+
+        // JavaScript function to update the directory display when a file is selected
+        function updateFileName() {
+            var fileInput = document.getElementById('file-upload');
+            var fileDirectory = document.getElementById('file-directory');
+            if (fileInput.files.length > 0) {
+                fileDirectory.textContent = fileInput.files[0].name;
+            } else {
+                fileDirectory.textContent = "";
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="left-section">
+            
+            <form method="post" action="{% url 'index' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <button type="submit" name="start_webcam" class="start-webcam-btn">Live Webcam</button>
+            </form>
+            <form onsubmit="return checkFile()" method="post" action="{% url 'index' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <hr>
+                <label for="file-upload" class="custom-file-upload">
+                    <input type="file" name="video" accept="video/*" id="file-upload" onchange="updateFileName()"> Upload Video
+                </label>
+                <br>
+                <span id="file-directory"></span>
+                <br>
+                <button type="submit" name="upload_video">Start Detection</button>
+            </form>
+        </div>
+        <div class="right-section">
+            <h2>Secure ATM</h2>
+            
+            <img src="{% static 'secure_atm.jpg' %}" alt="Secure ATM" class="logo">
+            <div class="image-text">
+                <p>Welcome to our platform, where we revolutionize <br> ATM security with cutting-edge anomaly detection technology, <br>ensuring a secure and reassuring experience <br> for all ATM users.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+{% comment %} original {% endcomment %}
+
+
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Secure ATM</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            text-align: center;
+        }
+
+        button {
+            padding: 15px 30px; /* Larger padding for a bigger button */
+            font-size: 18px; /* Increased font size */
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+            margin: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        hr {
+            border: 1px solid #ddd; /* Horizontal line styling */
+            margin: 20px 0;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-upload {
+            display: inline-block;
+            padding: 15px 30px; /* Larger padding for a bigger button */
+            cursor: pointer;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+            margin: 10px;
+        }
+
+        .custom-file-upload:hover {
+            background-color: #45a049;
+        }
+
+        /* Additional styling for "Start Webcam" button */
+        .start-webcam-btn {
+            display: block;
+            margin: 10px auto; /* Adjust as needed */
+            background-color: #3498db; /* Different color */
+        }
+
+        .start-webcam-btn:hover {
+            background-color: #2980b9; /* Different color on hover */
+        }
+
+        /* Styling for the directory display */
+        #file-directory {
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* Container styling */
+        .file-upload-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+        // JavaScript function to check if a file is selected before form submission
+        function checkFile() {
+            var fileInput = document.getElementById('file-upload');
+            if (fileInput.files.length > 0) {
+                return true; // Allow form submission
+            } else {
+                alert('Please select a video file before submitting.');
+                return false; // Prevent form submission
+            }
+        }
+
+        // JavaScript function to update the directory display when a file is selected
+        function updateFileName() {
+            var fileInput = document.getElementById('file-upload');
+            var fileDirectory = document.getElementById('file-directory');
+            if (fileInput.files.length > 0) {
+                fileDirectory.textContent = "Selected file: " + fileInput.files[0].name;
+            } else {
+                fileDirectory.textContent = "";
+            }
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <h1>Secure ATM</h1>
+        <form method="post" action="{% url 'index' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <button type="submit" name="start_webcam" class="start-webcam-btn">Live Webcam</button>
+        </form>
+        <div class="file-upload-container">
+            <form onsubmit="return checkFile()" method="post" action="{% url 'index' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <hr>
+                <label for="file-upload" class="custom-file-upload">
+                    <input type="file" name="video" accept="video/*" id="file-upload" onchange="updateFileName()"> Upload Video
+                </label>
+                <br>
+                <span id="file-directory"></span>
+                <br>
+                <button type="submit" name="upload_video">Start Detection</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html> {% endcomment %}
+
+
+
+{% comment %} animated  {% endcomment %}
+
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Secure ATM</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        form {
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        button {
+            padding: 15px 30px; /* Larger padding for a bigger button */
+            font-size: 18px; /* Increased font size */
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+            margin: 10px;
+            animation: slideIn 1s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        hr {
+            border: 1px solid #ddd; /* Horizontal line styling */
+            margin: 20px 0;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-upload {
+            display: inline-block;
+            padding: 15px 30px; /* Larger padding for a bigger button */
+            cursor: pointer;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+            margin: 10px;
+            animation: slideIn 1s ease-in-out;
+        }
+
+        .custom-file-upload:hover {
+            background-color: #45a049;
+        }
+
+        /* Additional styling for "Start Webcam" button */
+        .start-webcam-btn {
+            display: block;
+            margin: 10px auto; /* Adjust as needed */
+            background-color: #3498db; /* Different color */
+            animation: slideIn 1s ease-in-out;
+        }
+
+        .start-webcam-btn:hover {
+            background-color: #2980b9; /* Different color on hover */
+        }
+
+        /* Styling for the directory display */
+        #file-directory {
+            margin-top: 10px;
+            font-style: italic;
+            animation: slideIn 1s ease-in-out;
+        }
+
+        /* Container styling */
+        .file-upload-container {
+            text-align: center;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Animation keyframes */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+    <script>
+        // JavaScript function to check if a file is selected before form submission
+        function checkFile() {
+            var fileInput = document.getElementById('file-upload');
+            if (fileInput.files.length > 0) {
+                return true; // Allow form submission
+            } else {
+                alert('Please select a video file before submitting.');
+                return false; // Prevent form submission
+            }
+        }
+
+        // JavaScript function to update the directory display when a file is selected
+        function updateFileName() {
+            var fileInput = document.getElementById('file-upload');
+            var fileDirectory = document.getElementById('file-directory');
+            if (fileInput.files.length > 0) {
+                fileDirectory.textContent = "Selected file: " + fileInput.files[0].name;
+            } else {
+                fileDirectory.textContent = "";
+            }
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <h1>Secure ATM</h1>
+        <form method="post" action="{% url 'index' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <button type="submit" name="start_webcam" class="start-webcam-btn">Live Webcam</button>
+        </form>
+        <div class="file-upload-container">
+            <form onsubmit="return checkFile()" method="post" action="{% url 'index' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <hr>
+                <label for="file-upload" class="custom-file-upload">
+                    <input type="file" name="video" accept="video/*" id="file-upload" onchange="updateFileName()"> Upload Video
+                </label>
+                <br>
+                <span id="file-directory"></span>
+                <br>
+                <button type="submit" name="upload_video">Start Detection</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html> {% endcomment %}
